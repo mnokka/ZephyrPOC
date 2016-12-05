@@ -2,6 +2,11 @@ import datetime
 import time
 import argparse
 import sys
+import netrc
+import requests, os
+from requests.auth import HTTPBasicAuth
+import itertools, re, sys
+
 
 
 __version__ = "0.1"
@@ -42,7 +47,44 @@ def main(argv):
     print "---------------------------------------------------------"
     print "Parameter was: {0}".format(tparam)
     print "---------------------------------------------------------"
+    Autheticate()
+    
+def Autheticate():
+    host="http://jira7.almdemo.fi"
+    credentials = netrc.netrc()
+    auth = credentials.authenticators(host)
+    if auth:
+        user = auth[0]
+        PASSWORD = auth[2]
+        print "AUTH OK: {0} {1}".format(user,auth)
+    else:
+        print "ERROR: .netrc file problem (Server:{0} . EXITING!".format(host)
+        sys.exit(1)
+
+    link=host
+    
+    f = requests.get(link,auth=(user, PASSWORD))
+         
+    # CHECK WRONG AUTHENTICATION    
+    header=str(f.headers)
+    HeaderCheck = re.search( r"(.*?)(AUTHENTICATION_DENIED|AUTHENTICATION_FAILED)", header)
+    if HeaderCheck:
+        CurrentGroups=HeaderCheck.groups()
+        print ("Group 1: %s" % CurrentGroups[0]) 
+        print ("Group 2: %s" % CurrentGroups[1]) 
+        print ("Header: %s" % header)         
+        print "--> ERROR: Apparantly user authentication gone wrong. EXITING!"
+        sys.exit(1)
+    else:
+        print "HEADER:{0}".format(header)
+    
+    print "---------------------------------------------------------"
     
     
 if __name__ == "__main__":
         main(sys.argv[1:])
+        
+        
+        
+        
+        
