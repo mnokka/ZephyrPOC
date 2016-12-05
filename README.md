@@ -9,5 +9,5 @@ Tool to crate JIRA Issues
 
 
 
-**AUTOHOR**
+**AUTHOR**
 mika.nokka1@gmail.com
