@@ -5,7 +5,11 @@ import sys
 import netrc
 import requests, os
 from requests.auth import HTTPBasicAuth
+# We don't want InsecureRequest warnings:
+import requests
+requests.packages.urllib3.disable_warnings()
 import itertools, re, sys
+from jira import JIRA
 
 
 
@@ -14,7 +18,7 @@ __version__ = "0.1"
 
     
 def main(argv):
-    
+
     
     parser = argparse.ArgumentParser(usage="""
     {1}    Version:{0}
@@ -47,7 +51,8 @@ def main(argv):
     print "---------------------------------------------------------"
     print "Parameter was: {0}".format(tparam)
     print "---------------------------------------------------------"
-    Autheticate()
+    user, PASSWORD = Autheticate()
+    DoJIRAStuff(user,PASSWORD)
     
 def Autheticate():
     host="http://jira7.almdemo.fi"
@@ -62,7 +67,6 @@ def Autheticate():
         sys.exit(1)
 
     link=host
-    
     f = requests.get(link,auth=(user, PASSWORD))
          
     # CHECK WRONG AUTHENTICATION    
@@ -76,9 +80,20 @@ def Autheticate():
         print "--> ERROR: Apparantly user authentication gone wrong. EXITING!"
         sys.exit(1)
     else:
-        print "HEADER:{0}".format(header)
-    
+        print "OK - HEADER: {0}".format(header)    
     print "---------------------------------------------------------"
+    return user,PASSWORD
+    
+def DoJIRAStuff(user,PASSWORD):
+ jira_server="http://jira7.almdemo.fi"
+ try:
+     print("Connecting to JIRA: %s" % jira_server)
+     jira_options = {'server': jira_server}
+     jira = JIRA(options=jira_options,basic_auth=(user,PASSWORD))
+     print "JIRA OK"
+ except Exception,e:
+    print("Failed to connect to JIRA: %s" % e)
+    
     
     
 if __name__ == "__main__":
