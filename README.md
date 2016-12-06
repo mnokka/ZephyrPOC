@@ -10,14 +10,14 @@ tool
 
 
 
-** REQUIREMENTS **
+**REQUIREMENTS**
 
 * Python 2.7
 * Use pip install -r requirements to install neeed libraries
 * Recommending usage of Python virtual env
 
 
-** Authentication **
+**Authentication**
 
 * .netrc file used to provide logging credentials
 * Remember .netrc file protection
