@@ -19,17 +19,23 @@ __version__ = "0.1"
     
 def main(argv):
 
+    JIRASERVICE=""
+    JIRAPROJECT=""
     
     parser = argparse.ArgumentParser(usage="""
-    {1}    Version:{0}
+    {1}    Version:{0} by mika.nokka1@gmail.com
     
+    .netrc file used for authentication. Remember chmod 600 protection
+    Creates issue for given JIRA servcer and project in JIRA
+    Used to crate issue when build fails in Bamboo
+    
+    EXAMPLE: python script.py  -t TEST -s http://jira.test.com
 
-
- EXAMPLE: python script.py  -t some_txt
 
     """.format(__version__,sys.argv[0]))
 
-    parser.add_argument('-t','--target', help='<Print something>')
+    parser.add_argument('-p','--project', help='<JIRA project>')
+    parser.add_argument('-s','--service', help='<Service (target JIRA address>')
     parser.add_argument('-v','--version', help='<Version>', action='store_true')
     
     args = parser.parse_args()
@@ -37,60 +43,60 @@ def main(argv):
     
     if args.version:
         print 'Tool version: %s'  % __version__
-        print "DEMO FIRDAY" 
         sys.exit(2)    
          
-    tparam = args.target or ''
 
+    JIRASERVICE = args.service or ''
+    JIRAPROJECT = args.project or ''
   
     # quick old-school way to check needed parameters
-    if (tparam == ""):
+    if (JIRASERVICE=='' or  JIRAPROJECT==''):
         parser.print_help()
         sys.exit(2)
+
+    user, PASSWORD = Autheticate(JIRASERVICE)
+    DoJIRAStuff(user,PASSWORD,JIRASERVICE)
     
-    print "---------------------------------------------------------"
-    print "Parameter was: {0}".format(tparam)
-    print "---------------------------------------------------------"
-    user, PASSWORD = Autheticate()
-    DoJIRAStuff(user,PASSWORD)
     
-def Autheticate():
-    host="http://jira7.almdemo.fi"
+####################################################################################################    
+def Autheticate(JIRASERVICE):
+    host=JIRASERVICE
     credentials = netrc.netrc()
     auth = credentials.authenticators(host)
     if auth:
         user = auth[0]
         PASSWORD = auth[2]
-        print "AUTH OK: {0} {1}".format(user,auth)
+        print "Got .netrc OK"
     else:
         print "ERROR: .netrc file problem (Server:{0} . EXITING!".format(host)
         sys.exit(1)
 
-    link=host
-    f = requests.get(link,auth=(user, PASSWORD))
+    f = requests.get(host,auth=(user, PASSWORD))
          
     # CHECK WRONG AUTHENTICATION    
     header=str(f.headers)
     HeaderCheck = re.search( r"(.*?)(AUTHENTICATION_DENIED|AUTHENTICATION_FAILED)", header)
     if HeaderCheck:
-        CurrentGroups=HeaderCheck.groups()
+        CurrentGroups=HeaderCheck.groups()    
         print ("Group 1: %s" % CurrentGroups[0]) 
         print ("Group 2: %s" % CurrentGroups[1]) 
         print ("Header: %s" % header)         
+        print "Authentication FAILED - HEADER: {0}".format(header) 
         print "--> ERROR: Apparantly user authentication gone wrong. EXITING!"
         sys.exit(1)
     else:
-        print "OK - HEADER: {0}".format(header)    
+        print "Authentication OK \nHEADER: {0}".format(header)    
     print "---------------------------------------------------------"
     return user,PASSWORD
-    
-def DoJIRAStuff(user,PASSWORD):
- jira_server="http://jira7.almdemo.fi"
+
+###################################################################################    
+def DoJIRAStuff(user,PASSWORD,JIRASERVICE):
+ jira_server=JIRASERVICE
  try:
      print("Connecting to JIRA: %s" % jira_server)
      jira_options = {'server': jira_server}
      jira = JIRA(options=jira_options,basic_auth=(user,PASSWORD))
-     print "JIRA OK"
+     print "JIRA Authorization OK"
  except Exception,e:
     print("Failed to connect to JIRA: %s" % e)
     
