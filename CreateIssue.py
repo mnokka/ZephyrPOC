@@ -19,29 +19,34 @@ from jira import JIRA
 
 
 __version__ = "0.1"
-
+thisFile = __file__
 
     
 def main(argv):
 
     JIRASERVICE=""
     JIRAPROJECT=""
+    JIRASUMMARY=""
+    JIRADESCRIPTION=""
+    
     
     parser = argparse.ArgumentParser(usage="""
-    {1}    Version:{0} by mika.nokka1@gmail.com
+    {1}    Version:{0}     -  mika.nokka1@gmail.com
     
     .netrc file used for authentication. Remember chmod 600 protection
-    Creates issue for given JIRA servcer and project in JIRA
+    Creates issue for given JIRA service and project in JIRA
     Used to crate issue when build fails in Bamboo
     
-    EXAMPLE: python script.py  -t TEST -s http://jira.test.com
+    EXAMPLE: python thisFile -j http://jira.test.com -p BUILD -s "summary text"
 
 
     """.format(__version__,sys.argv[0]))
 
     parser.add_argument('-p','--project', help='<JIRA project key>')
-    parser.add_argument('-s','--service', help='<Service (target JIRA address>')
+    parser.add_argument('-j','--jira', help='<Target JIRA address>')
     parser.add_argument('-v','--version', help='<Version>', action='store_true')
+    parser.add_argument('-s','--summary', help='<JIRA issue summary>')
+    parser.add_argument('-d','--description', help='<JIRA issue description>')
     
     args = parser.parse_args()
         
@@ -51,17 +56,20 @@ def main(argv):
         sys.exit(2)    
          
 
-    JIRASERVICE = args.service or ''
+    JIRASERVICE = args.jira or ''
     JIRAPROJECT = args.project or ''
+    JIRASUMMARY = args.summary or ''
+    JIRADESCRIPTION = args.description or ''
+  
   
     # quick old-school way to check needed parameters
-    if (JIRASERVICE=='' or  JIRAPROJECT==''):
+    if (JIRASERVICE=='' or  JIRAPROJECT=='' or JIRASUMMARY==''):
         parser.print_help()
         sys.exit(2)
 
     user, PASSWORD = Authenticate(JIRASERVICE)
     jira= DoJIRAStuff(user,PASSWORD,JIRASERVICE)
-    CreateIssue(jira,JIRAPROJECT)
+    CreateIssue(jira,JIRAPROJECT,JIRASUMMARY,JIRADESCRIPTION)
     
 ####################################################################################################    
 def Authenticate(JIRASERVICE):
@@ -107,14 +115,14 @@ def DoJIRAStuff(user,PASSWORD,JIRASERVICE):
  return jira   
     
 ####################################################################################
-def CreateIssue(jira,JIRAPROJECT):
+def CreateIssue(jira,JIRAPROJECT,JIRASUMMARY,JIRADESCRIPTION):
     jiraobj=jira
     project=JIRAPROJECT
     print "Creating issue for JIRA project: {0}".format(project)
     issue_dict = {
     'project': {'key': JIRAPROJECT},
-    'summary': 'New issue from CreateIssue',
-    'description': 'blab blaa',
+    'summary': JIRASUMMARY,
+    'description': JIRADESCRIPTION,
     'issuetype': {'name': 'Task'},
     }
 
@@ -122,7 +130,8 @@ def CreateIssue(jira,JIRAPROJECT):
         new_issue = jiraobj.create_issue(fields=issue_dict)
     except Exception,e:
         print("Failed to create JIRA project, error: %s" % e)
-    
+        sys.exit(1)
+        
 if __name__ == "__main__":
         main(sys.argv[1:])
         
