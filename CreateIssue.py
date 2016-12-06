@@ -1,3 +1,8 @@
+# Create Issue to given JIRA
+# Requires .netrc file for authentication
+#
+# 6.12.2016 mika.nokka1@gmail.com for Ambientia
+
 import datetime 
 import time
 import argparse
@@ -34,7 +39,7 @@ def main(argv):
 
     """.format(__version__,sys.argv[0]))
 
-    parser.add_argument('-p','--project', help='<JIRA project>')
+    parser.add_argument('-p','--project', help='<JIRA project key>')
     parser.add_argument('-s','--service', help='<Service (target JIRA address>')
     parser.add_argument('-v','--version', help='<Version>', action='store_true')
     
@@ -54,12 +59,12 @@ def main(argv):
         parser.print_help()
         sys.exit(2)
 
-    user, PASSWORD = Autheticate(JIRASERVICE)
-    DoJIRAStuff(user,PASSWORD,JIRASERVICE)
-    
+    user, PASSWORD = Authenticate(JIRASERVICE)
+    jira= DoJIRAStuff(user,PASSWORD,JIRASERVICE)
+    CreateIssue(jira,JIRAPROJECT)
     
 ####################################################################################################    
-def Autheticate(JIRASERVICE):
+def Authenticate(JIRASERVICE):
     host=JIRASERVICE
     credentials = netrc.netrc()
     auth = credentials.authenticators(host)
@@ -99,8 +104,24 @@ def DoJIRAStuff(user,PASSWORD,JIRASERVICE):
      print "JIRA Authorization OK"
  except Exception,e:
     print("Failed to connect to JIRA: %s" % e)
+ return jira   
     
-    
+####################################################################################
+def CreateIssue(jira,JIRAPROJECT):
+    jiraobj=jira
+    project=JIRAPROJECT
+    print "Creating issue for JIRA project: {0}".format(project)
+    issue_dict = {
+    'project': {'key': JIRAPROJECT},
+    'summary': 'New issue from CreateIssue',
+    'description': 'blab blaa',
+    'issuetype': {'name': 'Task'},
+    }
+
+    try:
+        new_issue = jiraobj.create_issue(fields=issue_dict)
+    except Exception,e:
+        print("Failed to create JIRA project, error: %s" % e)
     
 if __name__ == "__main__":
         main(sys.argv[1:])
