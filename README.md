@@ -24,14 +24,12 @@ Tool to create JIRA Issues (when Bamboo build fails)
 
 python CreateIssue  -j http://myjira.test.com -p mybuildkey -s "mysummary text" -d "mydesciption text"
 
-
-
-  -h, --help            show this help message and exit
-  -p PROJECT, --project PROJECT <JIRA project key>
-  -j JIRA, --jira JIRA  <Target JIRA address>
-  -v, --version         <Version>
-  -s SUMMARY, --summary SUMMARY <JIRA issue summary>
-  -d DESCRIPTION, --description DESCRIPTION <JIRA issue description>
+  *   -h, --help            show this help message and exit
+  *   -p PROJECT, --project PROJECT <JIRA project key>
+  *   -j JIRA, --jira JIRA  <Target JIRA address>
+  *   -v, --version         <Version>
+  *   -s SUMMARY, --summary SUMMARY <JIRA issue summary>
+  *   -d DESCRIPTION, --description DESCRIPTION <JIRA issue description>
   
 
 
