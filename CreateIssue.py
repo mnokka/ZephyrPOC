@@ -37,7 +37,7 @@ def main(argv):
     Creates issue for given JIRA service and project in JIRA
     Used to crate issue when build fails in Bamboo
     
-    EXAMPLE: python thisFile -j http://jira.test.com -p BUILD -s "summary text"
+    EXAMPLE: python {1}  -j http://jira.test.com -p BUILD -s "summary text"
 
 
     """.format(__version__,sys.argv[0]))
