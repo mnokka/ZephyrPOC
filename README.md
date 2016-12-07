@@ -1,5 +1,5 @@
 
-**DESCRIPTION**
+**Description**
 
 Tool to create JIRA Issues (when Bamboo build fails)
 
@@ -8,7 +8,7 @@ Tool to create JIRA Issues (when Bamboo build fails)
 * Bamboo plugin Pre-Post Build Command Runner can be used to trap failed builds 
 
 
-**REQUIREMENTS**
+**Requirements**
 
 * Python 2.7
 * Use pip install -r requirements.txt to install needed libraries
@@ -27,15 +27,13 @@ python CreateIssue  -j http://myjira.test.com -p mybuildkey -s "mysummary text" 
 
 
   -h, --help            show this help message and exit
-  -p PROJECT, --project PROJECT
-                        <JIRA project key>
+  -p PROJECT, --project PROJECT <JIRA project key>
   -j JIRA, --jira JIRA  <Target JIRA address>
   -v, --version         <Version>
-  -s SUMMARY, --summary SUMMARY
-                        <JIRA issue summary>
-  -d DESCRIPTION, --description DESCRIPTION
-                        <JIRA issue description>
+  -s SUMMARY, --summary SUMMARY <JIRA issue summary>
+  -d DESCRIPTION, --description DESCRIPTION <JIRA issue description>
+  
 
 
-**AUTHOR**
+**Author**
 mika.nokka1@gmail.com
