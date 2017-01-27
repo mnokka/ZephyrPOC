@@ -1,11 +1,10 @@
 
 **Description**
 
-Tool to create JIRA Issues (when Bamboo build fails)
+Zephyr POC
 
-* Aimed to be used with Bamboo builds 
- -->when build fails, creating automaticly problem issue to JIRA
-* Bamboo plugin Pre-Post Build Command Runner can be used to trap failed builds 
+* To get Zephyr test cases individual step state information
+* Creating progress information for each test step based on fetched info
 
 
 **Requirements**
@@ -22,14 +21,7 @@ Tool to create JIRA Issues (when Bamboo build fails)
 
 **Usage**
 
-python CreateIssue  -j http://myjira.test.com -p mybuildkey -s "mysummary text" -d "mydesciption text"
 
-  *   -h, --help            show this help message and exit
-  *   -p PROJECT, --project PROJECT <JIRA project key>
-  *   -j JIRA, --jira JIRA  <Target JIRA address>
-  *   -v, --version         <Version>
-  *   -s SUMMARY, --summary SUMMARY <JIRA issue summary>
-  *   -d DESCRIPTION, --description DESCRIPTION <JIRA issue description>
   
 
 
