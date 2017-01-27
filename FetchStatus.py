@@ -42,10 +42,10 @@ def main(argv):
 
     """.format(__version__,sys.argv[0]))
 
-    parser.add_argument('-p','--project', help='<JIRA project key>')
+    #parser.add_argument('-p','--project', help='<JIRA project key>')
     parser.add_argument('-j','--jira', help='<Target JIRA address>')
     parser.add_argument('-v','--version', help='<Version>', action='store_true')
-    parser.add_argument('-s','--summary', help='<JIRA issue summary>')
+    #parser.add_argument('-s','--summary', help='<JIRA issue summary>')
     parser.add_argument('-d','--description', help='<JIRA issue description>')
     
     args = parser.parse_args()
@@ -57,20 +57,19 @@ def main(argv):
          
 
     JIRASERVICE = args.jira or ''
-    JIRAPROJECT = args.project or ''
-    JIRASUMMARY = args.summary or ''
+   
     JIRADESCRIPTION = args.description or ''
   
   
     # quick old-school way to check needed parameters
-    if (JIRASERVICE=='' or  JIRAPROJECT=='' or JIRASUMMARY==''):
+    if (JIRASERVICE=='' ):
         parser.print_help()
         sys.exit(2)
 
     user, PASSWORD = Authenticate(JIRASERVICE)
     jira= DoJIRAStuff(user,PASSWORD,JIRASERVICE)
-    CreateIssue(jira,JIRAPROJECT,JIRASUMMARY,JIRADESCRIPTION)
-    
+    #CreateIssue(jira,JIRAPROJECT,JIRASUMMARY,JIRADESCRIPTION)
+    GetStepInfo(jira,JIRASERVICE,user,PASSWORD)    
 ####################################################################################################    
 def Authenticate(JIRASERVICE):
     host=JIRASERVICE
@@ -131,11 +130,30 @@ def CreateIssue(jira,JIRAPROJECT,JIRASUMMARY,JIRADESCRIPTION):
     except Exception,e:
         print("Failed to create JIRA project, error: %s" % e)
         sys.exit(1)
+
+####################################################################################
+def GetStepInfo(jira,JIRASERVICE,user,PASSWORD):
+    print "diggin part"
+    
+    headers = {'Content-Type': 'application/json'}
+    
+    # TOIMII URL="{0}/rest/zapi/latest/teststep/11325/1".format(JIRASERVICE)
+    URL="{0}/rest//rest/zapi/latest/execution?cycleId=1&action=expand&offset=0&sorter=OrderId:ASC&decorator=none&contentOnly=true&noTitle=true&projectId=10511&versionId=-1".format(JIRASERVICE)
+    #URL="{0}/rest/api/2/".format(JIRASERVICE)
+    #requests.post('https://bamboo.almdemo.fi/rest/api/latest/queue/GITHUBINT-SGF', data=data, auth=(user, password))
+    r=requests.get(URL, headers,  auth=(user, PASSWORD))
+    #''http://bamboo.almdemo.fi/rest/api/latest/queue/GITHUBINT-SGF'
+    
+    print ("Headers:{0}".format(r.headers))
+    print ("VIESTI:{0}".format(r.text))
+    
+    if (r.status_code == requests.codes.ok):
+        print ("ok")
+    else:
+        print ("FAIL")
+    
         
 if __name__ == "__main__":
         main(sys.argv[1:])
-        
-        
-        
         
         
